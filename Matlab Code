@@ -5,6 +5,7 @@ This file includes the required functions only
 [2] Time Step Function (Belal)
 
 [4] SGS Fucntion(Mehran)
+for i:imax
 
 [5] Jacobian Function (Mehran)
 
