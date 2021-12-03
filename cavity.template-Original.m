@@ -849,8 +849,8 @@ global u dt
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
 uvel2=zeros(imax,jmax);
-for i=1:imax
-    for j=1:jmax
+for i=2:imax-1
+    for j=2:jmax-1
         uvel2(i,j) = u(i,j,2).^2+u(i,j,3).^2;
         beta2 = max(uvel2(i,j),(rkappa*vel2ref));
         u_maxt = max(abs(u(i,j,2)));% max. x-velocity
@@ -859,8 +859,8 @@ for i=1:imax
         lambda_y = half*(v_maxt+sqrt(v_maxt.^2+four*beta2));
         lambda_max = max(lambda_x,lambda_y);% max. Eigen Value
         dtconv = min(dx,dy)/lambda_max; % Convective term
-        dtdif = fourth*dx*dy/(rmu/rho); % Diffusive term
-        dt(i,j) = cfl*min(dtconv,dtdif); % Time step
+        dtvisc = fourth*dx*dy/(rmu/rho); % Diffusive term
+        dt(i,j) = cfl*min(dtconv,dtvisc); % Time step
     end
     end
 end
@@ -1126,5 +1126,5 @@ if imms==1
 
 
 end
-
+toc
 end
