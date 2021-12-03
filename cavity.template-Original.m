@@ -476,9 +476,28 @@ global u
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
+% Pressure Boundary Conditions
+for j=2:jmax-1
+    u(1,j,1)=two*u(2,j,1)-u(3,j,1); % Left side wall
+    u(imax,j,1)=two*u(imax-1,j,1)-u(imax-2,j,1); % Right side wall
+end
+for i=2:imax-1
+    u(i,1,1)=two*u(i,2,1)-u(i,3,1); % Bottom wall side
+    u(i,jmax,1)=two*u(i,jmax-1,1)-u(i,jmax-2,1); % Top wall side
+end
 
+% Pressure Corners Conditions using average approx.
+u(1,1,1)=half*(u(2,1,1)+u(1,2,1)); % Left Bottom Corner
+u(1,jmax,1)=half*(u(2,jmax,1)+u(1,jmax-1,1)); % Left Top Corner
+u(imax,1,1)=half*(u(imax,2,1)+u(imax-1,1,1)); % Right Bottom Corner
+u(imax,jmax,1)=half*(u(imax-1,jmax,1)+u(imax,jmax-1,1)); % Right Top corner
 
-
+% Velocity Boundary Conditions
+u(1,:,2:3)=zero; % Left Wall
+u(imax,:,2:3)=zero; % Right Wall
+u(:,1,2:3)=zero; % Bottom Wall
+u(:,jmax,3)=zero; % Top Wall, Y- Velocity
+u(:,jmax,2)=uinf;
 end
 %************************************************************************
 function bndrymms(~)
@@ -829,10 +848,21 @@ global u dt
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
-
-
-
-
+uvel2=zeros(imax,jmax);
+for i=1:imax
+    for j=1:jmax
+        uvel2(i,j) = u(i,j,2).^2+u(i,j,3).^2;
+        beta2 = max(uvel2(i,j),(rkappa*vel2ref));
+        u_maxt = max(abs(u(i,j,2)));% max. x-velocity
+        v_maxt = max(abs(u(i,j,3)));% max. y- velocity
+        lambda_x = half*(u_maxt+sqrt(u_maxt.^2+four*beta2));
+        lambda_y = half*(v_maxt+sqrt(v_maxt.^2+four*beta2));
+        lambda_max = max(lambda_x,lambda_y);% max. Eigen Value
+        dtconv = min(dx,dy)/lambda_max; % Convective term
+        dtdif = fourth*dx*dy/(rmu/rho); % Diffusive term
+        dt(i,j) = cfl*min(dtconv,dtdif); % Time step
+    end
+    end
 end
 %************************************************************************
 function Compute_Artificial_Viscosity(~)
