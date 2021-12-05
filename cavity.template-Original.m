@@ -305,7 +305,32 @@ fclose(fp2);
 PrsMatrix = u(:,:,1);    %output arrays
 uvelMatrix = u(:,:,2);
 vvelMatrix = u(:,:,3);
+% Plotting 
+x1=1:imax;
+y1=1:jmax;
+x =(xmax)*(x1)/(imax );
+y = (ymax)*(y1)/(jmax );
+[X,Y] = meshgrid(x,y)
+figure(1)
+contourf(X,Y,PrsMatrix',100)
+xlabel('x(m)')
+ylabel('x(m)')
+title ('Pressure contour, 81x81 @ Re=100')
+grid on
+figure(2)
+contourf(X,Y,uvelMatrix',50)
+xlabel('x(m)')
+ylabel('x(m)')
+title ('X-momentum contour, 81x81 @ Re=100')
+grid on
+figure(3)
+contourf(X,Y,vvelMatrix',50)
+xlabel('x(m)')
+ylabel('x(m)')
+title ('Y-momentum contour, 81x81 @ Re=100')
+grid off
 toc  %end timer function
+
 end
 
 %**************************************************************************/
@@ -937,9 +962,24 @@ global artviscx artviscy dt s u
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
 
-
-
-
+for j=2:jmax-1
+    for i=2:imax-1
+        beta2=max((u(i,j,2).^2+u(i,j,3).^2),(rkappa*vel2ref));
+        dpdx=(u(i+1,j,1)-u(i-1,j,1))*half/dx;
+        dudx=(u(i+1,j,2)-u(i-1,j,2))*half/dx;
+        dvdx=(u(i+1,j,3)-u(i-1,j,3))*half/dx;
+        dpdy=(u(i,j+1,1)-u(i,j-1,1))*half/dy;
+        dudy=(u(i,j+1,2)-u(i,j-1,2))*half/dy;
+        dvdy=(u(i,j+1,3)-u(i,j-1,3))*half/dy;
+        d2udx2=(u(i+1,j,2)-two*u(i,j,2)+u(i-1,j,2))/(dx^2);
+        d2vdx2=(u(i+1,j,3)-two*u(i,j,3)+u(i-1,j,3))/(dx^2);
+        d2udy2=(u(i,j+1,2)-two*u(i,j,2)+u(i,j-1,2))/(dy^2);
+        d2vdy2=(u(i,j+1,3)-two*u(i,j,3)+u(i,j-1,3))/(dy^2);
+        u(i,j,1)=u(i,j,1)-beta2*dt(i,j)*(rho*dudx+rho*dvdy-s(i,j,1)-artviscx(i,j)-artviscy(i,j));
+        u(i,j,2)=u(i,j,2)-dt(i,j)*rhoinv*(rho*u(i,j,2)*dudx+rho*u(i,j,3)*dudy+dpdx-rmu*d2udx2-rmu*d2udy2-s(i,j,2));
+        u(i,j,3)=u(i,j,3)-dt(i,j)*rhoinv*(rho*u(i,j,2)*dvdx+rho*u(i,j,3)*dvdy+dpdy-rmu*d2vdx2-rmu*d2vdy2-s(i,j,3));
+    end
+end
 
 end
 %************************************************************************
@@ -976,6 +1016,24 @@ global artviscx artviscy dt s u
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
+for j=jmax-1:-1:2
+    for i=imax-1:-1:2
+        beta2=max((u(i,j,2).^2+u(i,j,3).^2),(rkappa*vel2ref));
+        dpdx=(u(i+1,j,1)-u(i-1,j,1))*half/dx;
+        dudx=(u(i+1,j,2)-u(i-1,j,2))*half/dx;
+        dvdx=(u(i+1,j,3)-u(i-1,j,3))*half/dx;
+        dpdy=(u(i,j+1,1)-u(i,j-1,1))*half/dy;
+        dudy=(u(i,j+1,2)-u(i,j-1,2))*half/dy;
+        dvdy=(u(i,j+1,3)-u(i,j-1,3))*half/dy;
+        d2udx2=(u(i+1,j,2)-two*u(i,j,2)+u(i-1,j,2))/(dx^2);
+        d2vdx2=(u(i+1,j,3)-two*u(i,j,3)+u(i-1,j,3))/(dx^2);
+        d2udy2=(u(i,j+1,2)-two*u(i,j,2)+u(i,j-1,2))/(dy^2);
+        d2vdy2=(u(i,j+1,3)-two*u(i,j,3)+u(i,j-1,3))/(dy^2);
+        u(i,j,1)=u(i,j,1)-beta2*dt(i,j)*(rho*dudx+rho*dvdy-s(i,j,1)-artviscx(i,j)-artviscy(i,j));
+        u(i,j,2)=u(i,j,2)-dt(i,j)*rhoinv*(rho*u(i,j,2)*dudx+rho*u(i,j,3)*dudy+dpdx-rmu*d2udx2-rmu*d2udy2-s(i,j,2));
+        u(i,j,3)=u(i,j,3)-dt(i,j)*rhoinv*(rho*u(i,j,2)*dvdx+rho*u(i,j,3)*dvdy+dpdy-rmu*d2vdx2-rmu*d2vdy2-s(i,j,3));
+    end
+end
 
 
 
@@ -1015,10 +1073,24 @@ global u uold artviscx artviscy dt s
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
-
-
-
-
+for i=2:imax-1
+    for j=2:jmax-1
+        beta2=max((u(i,j,2).^2+u(i,j,3).^2),(rkappa*vel2ref));
+        dpdx=(uold(i+1,j,1)-uold(i-1,j,1))*half/dx;
+        dudx=(uold(i+1,j,2)-uold(i-1,j,2))*half/dx;
+        dvdx=(uold(i+1,j,3)-uold(i-1,j,3))*half/dx;
+        dpdy=(uold(i,j+1,1)-uold(i,j-1,1))*half/dy;
+        dudy=(uold(i,j+1,2)-uold(i,j-1,2))*half/dy;
+        dvdy=(uold(i,j+1,3)-uold(i,j-1,3))*half/dy;
+        d2udx2=(uold(i+1,j,2)-two*uold(i,j,2)+uold(i-1,j,2))/(dx^2);
+        d2vdx2=(uold(i+1,j,3)-two*uold(i,j,3)+uold(i-1,j,3))/(dx^2);
+        d2udy2=(uold(i,j+1,2)-two*uold(i,j,2)+uold(i,j-1,2))/(dy^2);
+        d2vdy2=(uold(i,j+1,3)-two*uold(i,j,3)+uold(i,j-1,3))/(dy^2);
+        u(i,j,1)=uold(i,j,1)-beta2*dt(i,j)*(rho*dudx+rho*dvdy-s(i,j,1)-artviscx(i,j)-artviscy(i,j));
+        u(i,j,2)=uold(i,j,2)-dt(i,j)*rhoinv*(rho*uold(i,j,2)*dudx+rho*uold(i,j,3)*dudy+dpdx-rmu*d2udx2-rmu*d2udy2-s(i,j,2));
+        u(i,j,3)=uold(i,j,3)-dt(i,j)*rhoinv*(rho*uold(i,j,2)*dvdx+rho*uold(i,j,3)*dvdy+dpdy-rmu*d2vdx2-rmu*d2vdy2-s(i,j,3));
+    end
+end
 
 end
 %************************************************************************
