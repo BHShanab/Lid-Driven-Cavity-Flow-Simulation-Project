@@ -1240,6 +1240,46 @@ if imms==1
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
 
+    D_error_1=zeros(imax,jmax);
+    D_erro_2=zeros(imax,jmax);
+    D_error_3=zeros(imax,jmax);
+    rL1norm=[zero,zero,zero];
+    rL2norm=[zero,zero,zero];
+    rLinfnorm=[zero,zero,zero];
+    for i=1:imax
+        for j=1:jmax
+            D_error_1(i,j)=abs(u(i,j,1)-ummsArray(i,j,1));
+            D_erro_2(i,j)=abs(u(i,j,2)-ummsArray(i,j,2));
+            D_error_3(i,j)=abs(u(i,j,3)-ummsArray(i,j,3));
+        end
+    end
+    for i=1:imax
+        for j=1:jmax
+            rL1norm(1)=rL1norm(1)+D_error_1(i,j);
+            rL1norm(2)=rL1norm(2)+D_erro_2(i,j);
+            rL1norm(3)=rL1norm(3)+D_error_3(i,j);
+        end
+    end
+    rL1norm(1)=rL1norm(1)/(imax*jmax);
+    rL1norm(2)=rL1norm(2)/(imax*jmax);
+    rL1norm(3)=rL1norm(3)/(imax*jmax);
+
+    for i=1:imax
+        for j=1:jmax
+            rL2norm(1)=rL2norm(1)+D_error_1(i,j)^2;
+            rL2norm(2)=rL2norm(2)+D_erro_2(i,j)^2;
+            rL2norm(3)=rL2norm(3)+D_error_3(i,j)^2;
+        end
+    end
+    rL2norm(1)=sqrt(rL2norm(1)/(imax*jmax));
+    rL2norm(2)=sqrt(rL2norm(2)/(imax*jmax));
+    rL2norm(3)=sqrt(rL2norm(3)/(imax*jmax));
+
+    rLinfnorm(1)=max(max(D_error_1));
+    rLinfnorm(2)=max(max(D_erro_2));
+    rLinfnorm(3)=max(max(D_error_3));
+
+    rLnorm = [rL1norm ; rL2norm ; rLinfnorm]
 
 
 
