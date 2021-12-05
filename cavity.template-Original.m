@@ -922,11 +922,57 @@ global artviscx artviscy
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
-
-
-
+for i=3:imax-2
+    for j=3:jmax-2
+        beta2=max(u(i,j,2).^2+u(i,j,3).^2,rkappa*vel2ref);
+        lambda_x=half*(abs(u(i,j,2))+sqrt(u(i,j,2).^2+four*beta2));
+        lambda_y=half*(abs(u(i,j,3))+sqrt(u(i,j,3).^2+four*beta2));
+        d4pdx4=(u(i+2,j,1)-four*u(i+1,j,1)+six*u(i,j,1)-four*u(i-1,j,1)+ u(i-2,j,1))/dx^4;
+        d4pdy4=(u(i,j+2,1)-four*u(i,j+1,1)+six*u(i,j,1)-four*u(i,j-1,1)+u(i,j-2,1))/dy^4;
+        artviscx(i,j)=(-lambda_x*Cx*dx^3/beta2)*d4pdx4;
+        artviscy(i,j)=(-lambda_y*Cy*dy^3/beta2)*d4pdy4;
+    end
+end
+% Internal Loop between Walls and Artificial Viscocity Loop
+for j=3:jmax-2
+    beta2=max(u(2,j,2).^2+u(2,j,3).^2,rkappa*vel2ref); % Second left Column
+    lambda_y=half*(abs(u(2,j,3))+sqrt(u(2,j,3).^2+four*beta2));
+    d4pdy4=(u(2,j+2,1)-four*u(2,j+1,1)+six*u(2,j,1)-four*u(2,j-1,1)+u(2,j-2,1))/dy^4;
+    artviscy(2,j)=-lambda_y*Cy*dy^3/beta2*d4pdy4;
+    artviscx(2,j)=artviscx(3,j);
+    beta2=max(u(imax-1,j,2).^2+u(imax-1,j,3).^2,rkappa*vel2ref);% Left Column from the Right
+    lambda_y=half*(abs(u(imax-1,j,3))+sqrt(u(imax-1,j,3).^2+four*beta2));
+    d4pdy4=(u(imax-1,j+2,1)-four*u(imax-1,j+1,1)+six*u(imax-1,j,1)-four*u(imax-1,j-1,1)+u(imax-1,j-2,1))/dy^4;
+    artviscy(imax-1,j)=-lambda_y*Cy*dy^3/beta2*d4pdy4;
+    artviscx(imax-1,j)=artviscx(imax-2,j);
+end
+for i=3:imax-2
+    beta2=max(u(i,2,2).^2+u(i,2,3).^2,rkappa*vel2ref);% Second Row above Bottom
+    lambda_x=half*(abs(u(i,2,2))+sqrt(u(i,2,2).^2+four*beta2));
+    d4pdx4=(u(i+2,2,1)-four*u(i+1,2,1)+six*u(i,2,1)-four*u(i-1,2,1)+u(i-2,2,1))/dx^4;
+    artviscx(i,2)=-lambda_x*Cx*dx^3/beta2*d4pdx4;
+    artviscx(i,2)=artviscx(i,3);
+    beta2=max(u(i,jmax-1,2).^2+u(i,jmax-1,3).^2,rkappa*vel2ref); % Second Row Below Top
+    lambda_x=half*(abs(u(i,jmax-1,2))+sqrt(u(i,jmax-1,2).^2+four*beta2));
+    d4pdx4=(u(i+2,jmax-1,1)-four*u(i+1,jmax-1,1)+six*u(i,jmax-1,1)-four*u(i-1,jmax-1,1)+u(i-2,jmax-1,1))/dx^4;
+    artviscx(i,jmax-1)=-lambda_x*Cx*dx^3/beta2*d4pdx4;
+    artviscx(i,jmax-1)=artviscx(i,jmax-2);
+end
+% Corners outside the Inner loops
+artviscx(2,2)=half*(artviscx(2,3)+artviscx(3,2)); % Sx- Left Bottom  Corner
+artviscx(2,jmax-1)=half*(artviscx(3,jmax-1)+artviscx(2,jmax-2)); % Sx- Right Bottom  Corner
+artviscx(imax-1,2)=half*(artviscx(imax-2,2)+artviscx(imax-1,3)); % Sx- Left Top Corner
+artviscx(imax-1,jmax-1)=half*(artviscx(imax-2,jmax-1)+artviscx(imax-1,jmax-2)); % Sx-Right Top Corner
+artviscy(2,2)=half*(artviscy(2,3)+artviscy(3,2)); % Sy- Left Bottom  Corner
+artviscy(2,jmax-1)=half*(artviscy(3,jmax-1)+artviscy(2,jmax-2)); % Sy- Left Bottom  Corner
+artviscy(imax-1,2)=half*(artviscy(imax-2,2)+artviscy(imax-1,3)); % Sy- Left Bottom  Corner
+artviscy(imax-1,jmax-1)=half*(artviscy(imax-2,jmax-1)+artviscy(imax-1,jmax-2)); % Sy- Left Bottom  Corner
 
 end
+
+
+
+
 %************************************************************************
 function SGS_forward_sweep(~)
 %
