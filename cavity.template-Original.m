@@ -1302,3 +1302,11 @@ if imms==1
 end
 toc
 end
+
+
+%residual1 = load('Re41R100JP.mat');
+
+%figure(1)
+%plot(residual1(:,1),residual1(:,4))
+%xlabel('Iteration')
+%ylabel('Iterative residual')
