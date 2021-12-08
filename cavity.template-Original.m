@@ -1196,6 +1196,22 @@ global u uold dt fp1
 % !************************************************************** */
 % !************ADD CODING HERE FOR INTRO CFD STUDENTS************ */
 % !************************************************************** */
+for k=1:3
+    res(k)=-99.9;
+end
+ 
+for i=2:imax-1;
+    for j=2:jmax-1
+        temp1=abs(u(i,j,1)-uold(i,j,1))/dt(i,j);
+        res(1)=max(temp1,res(1));
+        temp2=abs(u(i,j,2)-uold(i,j,2))/ dt(i,j);
+        res(2)=max(temp2,res(2));
+        temp3=abs(u(i,j,3)-uold(i,j,3))/ dt(i,j);
+        res(3)=max(temp3,res(3));
+    end
+end
+ 
+conv=sqrt((res(1)^2+res(2)^2+res(3)^2));
 
 
 
