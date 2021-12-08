@@ -310,24 +310,27 @@ x1=1:imax;
 y1=1:jmax;
 x =(xmax)*(x1)/(imax );
 y = (ymax)*(y1)/(jmax );
-[X,Y] = meshgrid(x,y)
+[X,Y] = meshgrid(x,y);
 figure(1)
 contourf(X,Y,PrsMatrix',100)
 xlabel('x(m)')
 ylabel('x(m)')
 title ('Pressure contour, 81x81 @ Re=100')
+colorbar
 grid on
 figure(2)
 contourf(X,Y,uvelMatrix',50)
 xlabel('x(m)')
 ylabel('x(m)')
 title ('X-momentum contour, 81x81 @ Re=100')
+colorbar
 grid on
 figure(3)
 contourf(X,Y,vvelMatrix',50)
 xlabel('x(m)')
 ylabel('x(m)')
 title ('Y-momentum contour, 81x81 @ Re=100')
+colorbar
 grid off
 toc  %end timer function
 
